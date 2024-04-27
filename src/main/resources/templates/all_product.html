@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Product</title>
+    <script th:inline="javascript">
+        // Retrieve token from localStorage
+        var token = localStorage.getItem('token');
+
+        // If token exists, set it in request headers
+        if (token) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/', true);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.send();
+        }
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
