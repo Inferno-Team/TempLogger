@@ -6,5 +6,8 @@ import site.inferno_team.TempLogger.models.temperature.Temperature;
 import java.util.List;
 
 public interface TemperatureRepository extends JpaRepository<Temperature, Integer> {
-    List<Temperature> findByUser_Id(Integer id);
+
+
+    List<Temperature> findByModuleId(int moduleId);
+
 }

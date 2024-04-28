@@ -3,7 +3,6 @@ package site.inferno_team.TempLogger.models.temperature;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import site.inferno_team.TempLogger.models.user.User;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -34,10 +33,8 @@ public class Temperature implements Serializable {
     private Date updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({"temperatures", "password", "enabled", "authorities", "username",
-            "accountNonExpired", "accountNonLocked", "credentialsNonExpired",})
-    private User user;
-
+    @JoinColumn(name = "module_id", nullable = false)
+    @JsonIgnoreProperties({"temperatures", "mac","user_id"})
+    private Module moduleId;
 
 }
