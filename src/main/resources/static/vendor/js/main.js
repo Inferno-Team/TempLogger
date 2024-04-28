@@ -46,6 +46,23 @@
         return check;
     });
 
+    $('.create-new-module-form').on('submit', function (e) {
+        e.preventDefault();
+        axios.post('/module/store', {
+            name: $("#module-name-input").val(),
+            mac: $("#mac-input").val(),
+        }, {
+            headers: {
+                "Authorization": "Bearer " + getCookieValue('token'),
+            }
+        }).then((result) => {
+
+        }).catch((err) => {
+
+        });
+    })
+
+
     function setCookie(name, value, days) {
         var expires = "";
         if (days) {
@@ -54,6 +71,13 @@
             expires = "; expires=" + date.toUTCString();
         }
         document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+    function getCookieValue(name) {
+        const regex = new RegExp(`(^| )${name}=([^;]+)`)
+        const match = document.cookie.match(regex)
+        if (match) {
+            return match[2]
+        }
     }
     $('.validate-form .input100').each(function () {
         $(this).focus(function () {

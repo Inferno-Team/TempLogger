@@ -55,19 +55,6 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse authenticateWeb(AuthenticateRequest request) {
-
-        manager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        String jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
-    }
-
     
 
     public Optional<User> getCurrentUser(HttpServletRequest request) {

@@ -47,8 +47,9 @@ public class User implements UserDetails {
     @JsonIgnoreProperties("user")
     private List<Temperature> temperatures;
 
-//    @OneToOne(mappedBy = "user")
-//    private Module espModule;
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("user")
+    private Module espModule;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
