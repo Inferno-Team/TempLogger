@@ -25,4 +25,10 @@ public class TempController {
         temperatureRepository.save(temperature);
         return "temp has been created";
     }
+    @PostMapping("/delete")
+    public String deleteTemp(int id){
+        temperatureRepository.deleteById(id);
+        return "deleted";
+    }
+
 }
