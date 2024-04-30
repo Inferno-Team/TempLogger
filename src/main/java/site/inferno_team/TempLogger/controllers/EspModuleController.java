@@ -1,19 +1,17 @@
 package site.inferno_team.TempLogger.controllers;
 
-import java.lang.module.ModuleReader;
-import java.util.Enumeration;
 import java.util.Map;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
-import site.inferno_team.TempLogger.models.module.Module;
+import site.inferno_team.TempLogger.models.module.EspModule;
 import site.inferno_team.TempLogger.models.user.Role;
 import site.inferno_team.TempLogger.models.user.User;
 import site.inferno_team.TempLogger.repositories.ModuleRepository;
@@ -25,6 +23,7 @@ import site.inferno_team.TempLogger.repositories.UserRepository;
 public class EspModuleController {
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
 
     @PostMapping("/store")
     @ResponseBody
@@ -35,10 +34,10 @@ public class EspModuleController {
                 .firstname("esp32-" + name)
                 .lastname("no-last-name")
                 .email(mac + "@templogger.com")
-                .password("password")
+                .password(encoder.encode("password"))
                 .role(Role.MODULE).build();
         userRepository.save(espUser);
-        Module module = Module.builder().name(name).macAddress(mac).user(espUser).build();
+        EspModule module = EspModule.builder().name(name).macAddress(mac).user(espUser).build();
         moduleRepository.save(module);
 
         return "esp32 created successfully.";

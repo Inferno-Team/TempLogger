@@ -7,7 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import site.inferno_team.TempLogger.models.temperature.Temperature;
-import site.inferno_team.TempLogger.models.module.Module;
+import site.inferno_team.TempLogger.models.module.EspModule;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 public class User implements UserDetails {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(nullable = false)
     private String firstname;
@@ -43,13 +43,13 @@ public class User implements UserDetails {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("user")
-    private List<Temperature> temperatures;
+    // @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    // @JsonIgnoreProperties("user")
+    // private List<Temperature> temperatures;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("user")
-    private Module espModule;
+    private EspModule espModule;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

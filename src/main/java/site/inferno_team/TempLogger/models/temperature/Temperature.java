@@ -3,6 +3,7 @@ package site.inferno_team.TempLogger.models.temperature;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import site.inferno_team.TempLogger.models.module.EspModule;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,7 +24,7 @@ public class Temperature implements Serializable {
     private String humidity;
 
     @Basic(optional = false)
-    @Column(name = "created_at", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    // @Column(name = "created_at", insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
@@ -34,7 +35,7 @@ public class Temperature implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "module_id", nullable = false)
-    @JsonIgnoreProperties({"temperatures", "mac","user_id"})
-    private Module moduleId;
+    @JsonIgnoreProperties({ "temperatures", "mac", "user_id" })
+    private EspModule module;
 
 }
