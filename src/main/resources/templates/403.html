@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="components/header :: header('Create New Module')"></head>
+
+<body>
+    <div id="wrapper">
+
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content" style="height: 100vh;flex-direction: column;justify-content: center;display: flex;">
+
+                <div class="container-fluid">
+                    <div class="text-center">
+                        <div class="error mx-auto" th:data-text="${status_code}" th:text="${status_code}"></div>
+                        <p class="lead text-gray-800 mb-5" th:text="${msg}"></p>
+                        <a href="/auth/login">&larr; Back to Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+    <div th:replace="components/footer :: footer"></div>
+
+</body>
+
+</html>

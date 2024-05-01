@@ -39,6 +39,7 @@
             let data = result.data;
             let token = data.token;
             setCookie('token', token, 7);
+            window.location.href = "/";
         }).catch((err) => {
             console.error(err);
         });

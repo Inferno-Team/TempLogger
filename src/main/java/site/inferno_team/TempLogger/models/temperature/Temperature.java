@@ -33,7 +33,7 @@ public class Temperature implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "module_id", nullable = false)
     @JsonIgnoreProperties({ "temperatures", "mac", "user_id" })
     private EspModule module;

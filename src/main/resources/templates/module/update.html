@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head th:replace="components/header :: header('Create New Module')"></head>
+<head th:replace="components/header :: header('Update Module')"></head>
 
 <body>
     <div id="wrapper">
@@ -22,20 +22,21 @@
                             <div class="p-5">
                                 <p class="lead text-gray-800 mb-5" th:if="${msg!=null}" th:text="${msg}"></p>
                                 <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">Create New Module</h1>
+                                    <h1 class="h4 text-gray-900 mb-4">Update Module</h1>
                                 </div>
-                                <form class="user" method="post" action="/module/store">
+                                <form class="user" method="POST" action="/module/update">
+                                    <input type="hidden" th:value="${module.id}" name="id" />
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user" name="name"
-                                            placeholder="Module Name ...">
+                                            placeholder="Module Name ..." th:value="${module.name}">
                                     </div>
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user" name="mac"
-                                            placeholder="Module Mac Address">
+                                            placeholder="Module Mac Address" th:value="${module.macAddress}">
                                     </div>
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user" name="ip"
-                                            placeholder="Module IP Address">
+                                            placeholder="Module IP Address" th:value="${module.ipAddress}">
                                     </div>
                                     <button class="btn btn-primary btn-user btn-block">
                                         Create

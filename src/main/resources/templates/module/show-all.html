@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="components/header :: header('All Modules')"></head>
+
+<head>
+    <style>
+        .fa-i-cursor {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div th:replace="components/sidebar :: sidebar"></div>
+        <!-- End of Sidebar -->
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+
+                <!-- Topbar -->
+                <div th:replace="components/navbar :: navbar"></div>
+                <!-- End of Topbar -->
+                <div class="container-fluid">
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">All Modules</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Mac</th>
+                                            <th>IP</th>
+                                            <th>Status</th>
+                                            <th>User[name]</th>
+                                            <th>User[email]</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="module : ${modules}">
+                                            <td th:text="${module.id}"></td>
+                                            <td th:text="${module.name}"></td>
+                                            <td th:text="${module.macAddress}"></td>
+                                            <td th:text="${module.ipAddress}"></td>
+                                            <td th:text="${module.status}"></td>
+                                            <td th:text="${module.user.firstname}"></td>
+                                            <td th:text="${module.user.email}"></td>
+                                            <td style="display: flex;justify-content: space-between;">
+                                                <i th:attr="data-id=${module.id}" class="fas fa-pencil-alt fa-i-cursor"
+                                                    style="color:blue"></i>
+                                                <i th:attr="data-id=${module.id}" class="fas fa-trash-alt fa-i-cursor"
+                                                    style="color:red"></i>
+                                                <i class="fas fa-power-off fa-i-cursor"
+                                                    th:attr='style=${module.status.name != "OFF" ? "color:red" : "color:green"},data-id=${module.id}'></i>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+    <div class="modal fade" id="remove-item-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Remove Item</h5>
+                </div>
+                <div class="modal-body">Do you want to remove this Module , all it's data will be lost ?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="deleteModule()">Yes</button>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="change-status-item-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Change Item Status</h5>
+                </div>
+                <div class="modal-body">Do you want to change this Module's status? </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="changeModuleStatus()">Yes</button>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="components/footer :: footer"></div>
+    <script th:src="@{/vendors/dashboard-vendor/datatables/jquery.dataTables.min.js}" type="text/javascript"></script>
+    <script th:src="@{/vendors/dashboard-vendor/datatables/dataTables.bootstrap4.min.js}"
+        type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Call the dataTables jQuery plugin
+        $(document).ready(function () {
+            $('#dataTable').DataTable();
+        });
+        $(".fa-pencil-alt").on('click', function () {
+            let id = $(this).attr('data-id');
+            window.location.href = `/module/update/${id}`
+        })
+        $('.fa-trash-alt').on('click', function () {
+            let id = $(this).attr('data-id');
+            window.selectedItemId = id;
+            $("#remove-item-modal").modal('show')
+        })
+        $('.fa-power-off').on('click', function () {
+            let id = $(this).attr('data-id');
+            window.selectedItemId = id;
+            $("#change-status-item-modal").modal('show')
+        })
+
+        function changeModuleStatus() {
+            let id = window.selectedItemId;
+            $("#change-status-item-modal").modal('hide')
+            $.ajax({
+                url: `/module/change-status/${id}`,
+                method: 'POST',
+                success: function (data) {
+                    alert(data);
+                    window.location.reload()
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus)
+                    console.error(errorThrown);
+                }
+            })
+        }
+
+        function deleteModule() {
+            let id = window.selectedItemId;
+            $("#remove-item-modal").modal('hide')
+            $.ajax({
+                url: `/module/delete/${id}`,
+                method: 'POST',
+                success: function (data) {
+                    alert(data);
+                    window.location.reload()
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus)
+                    console.error(errorThrown);
+                    window.location.reload()
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>
