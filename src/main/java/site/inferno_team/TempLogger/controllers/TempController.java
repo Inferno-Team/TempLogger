@@ -3,8 +3,12 @@ package site.inferno_team.TempLogger.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import site.inferno_team.TempLogger.auth.AuthenticationService;
 import site.inferno_team.TempLogger.models.module.EspModule;
 import site.inferno_team.TempLogger.models.temperature.Temperature;
+import site.inferno_team.TempLogger.models.user.User;
 import site.inferno_team.TempLogger.repositories.ModuleRepository;
 import site.inferno_team.TempLogger.repositories.TemperatureRepository;
 
@@ -13,9 +17,11 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/temp")
+@RequiredArgsConstructor
 public class TempController {
-    private TemperatureRepository temperatureRepository;
-    private ModuleRepository moduleRepository;
+    private final TemperatureRepository temperatureRepository;
+    private final ModuleRepository moduleRepository;
+    private final AuthenticationService service;
 
     @GetMapping("/temp/{module_id}")
     public List<Temperature> getTempratureByUserId(@RequestParam("module_id") int id) {
@@ -23,11 +29,14 @@ public class TempController {
     }
 
     @PostMapping("/store")
-    public String storeTemperature(@RequestBody Map<String, String> request) {
+    @ResponseBody
+    public String storeTemperature(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) {
         String temp = request.get("temperature");
-        String humidity = request.get("humidity");
-        String moduleId = request.get("moduleId");
-        EspModule module = moduleRepository.findById(Integer.parseInt(moduleId)).orElseThrow();
+        String humidity =  request.get("humidity");
+        User user = service.getCurrentUser(httpRequest).orElseThrow();
+        // String moduleId = request.get("moduleId");
+        int moduleId = user.getEspModule().getId();
+        EspModule module = moduleRepository.findById(moduleId).orElseThrow();
         Temperature temperature = Temperature.builder().temperature(temp).humidity(humidity).module(module).build();
         temperatureRepository.save(temperature);
         return "temp has been created";

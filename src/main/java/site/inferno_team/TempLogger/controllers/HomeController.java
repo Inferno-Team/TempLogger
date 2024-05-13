@@ -46,17 +46,18 @@ public class HomeController {
 
     }
 
+    @GetMapping("/test")
     @ResponseBody
     public String generateAndInsertFakeData() {
         Random random = new Random();
-        EspModule espModule = moduleRepository.findAll().get(0);
+        EspModule espModule = moduleRepository.findAll().get(1);
         System.out.println(espModule);
 
         // Define the date range
-        long startMillis = toDate("2024-05-01 00:00:00").getTime();
-        long endMillis = toDate("2024-05-01 23:59:59").getTime();
+        long startMillis = toDate("2024-05-05 00:00:00").getTime();
+        long endMillis = toDate("2024-05-05 23:59:59").getTime();
 
-        for (int i = 0; i < 250; i++) {
+        for (int i = 0; i <96; i++) {
             // Generate random temperature and humidity values
             String temperature = String.format("%.2f", -20 + random.nextDouble() * (40 + 20));
             String humidity = String.format("%.2f", random.nextDouble() * 100);

@@ -1,9 +1,14 @@
 package site.inferno_team.TempLogger.controllers;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.Gson;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import site.inferno_team.TempLogger.auth.AuthenticationService;
 import site.inferno_team.TempLogger.models.module.EspModule;
 import site.inferno_team.TempLogger.models.module.EspModuleStatus;
 import site.inferno_team.TempLogger.models.user.Role;
@@ -31,6 +41,7 @@ public class EspModuleController {
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final AuthenticationService authenticationService;
 
     @PostMapping(path = "/store")
     @Transactional
@@ -78,6 +89,21 @@ public class EspModuleController {
         module.setStatus(module.getStatus() == EspModuleStatus.ON ? EspModuleStatus.OFF : EspModuleStatus.ON);
         moduleRepository.save(module);
         // TODO: send command to Module ESP32 to change it status.
+        String url = String.format("http://%s/change-status", module.getIpAddress());
+        Gson gson = new Gson();
+        Map<String, String> data = new HashMap<>();
+        data.put("status", module.getStatus().name());
+        String jsonData = gson.toJson(data);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonData, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+        // Print response
+        System.out.println("Response status: " + response.getStatusCode());
+        System.out.println("Response body: " + response.getBody());
+
         return "Module Status Changed.";
     }
 
@@ -109,4 +135,11 @@ public class EspModuleController {
         return "Module Removed successfully.";
     }
 
+    @PostMapping("/current-state")
+    @ResponseBody
+    public String getCurrentState(HttpServletRequest request) {
+        User user = authenticationService.getCurrentUser(request).orElseThrow();
+        EspModule espModule = user.getEspModule();
+        return espModule.getStatus().name();
+    }
 }
