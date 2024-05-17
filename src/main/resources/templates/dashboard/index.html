@@ -27,6 +27,16 @@
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary" id="temperature-title">Temperature
                                     </h6>
+                                    <div class="col" style="max-width: fit-content;">
+                                        <button class="btn btn-primary" type="submit" id="prevDay">
+                                            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                                        </button>
+                                        <button class="btn btn-primary disabled" id="tempCurrentTimeString">
+                                        </button>
+                                        <button class="btn btn-primary" type="submit" id="nextDay">
+                                            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -41,6 +51,10 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-area">
+                                        <div class="text-center" id="temp-no-data"
+                                            style="height: 100%;display: none;align-items: center;width: 100%;justify-content: center;">
+                                            <h6>No Data</h6>
+                                        </div>
                                         <canvas id="myAreaChart"></canvas>
                                     </div>
                                 </div>
@@ -54,6 +68,16 @@
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary" id="humidity-title">Humidity
                                     </h6>
+                                    <div class="col" style="max-width: fit-content;">
+                                        <button class="btn btn-primary" type="submit" id="humPrevDay">
+                                            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                                        </button>
+                                        <button class="btn btn-primary disabled" id="humCurrentTimeString">
+                                        </button>
+                                        <button class="btn btn-primary" type="submit" id="humNextDay">
+                                            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -67,7 +91,12 @@
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
+
                                     <div class="chart-area">
+                                        <div class="text-center" id="hum-no-data"
+                                            style="height: 100%;display: none;align-items: center;width: 100%;justify-content: center;">
+                                            <h6>No Data</h6>
+                                        </div>
                                         <canvas id="humidityChart"></canvas>
                                     </div>
                                 </div>

@@ -1,32 +1,85 @@
 <script th:fragment="script" th:inline="javascript">
+    const generateOtherModuleMenuItem = `<div class="dropdown-header">Other Modules</div>`;
+
     Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
     Chart.defaults.global.defaultFontColor = '#858796';
-    function formatDate(timestamp) {
-        const date = new Date(timestamp);
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}`;
-    }
-
     var temperaturesJson = JSON.parse(/*[[${temperaturesJson}]]*/ '');
     var humiditiesJson = JSON.parse(/*[[${humiditiesJson}]]*/ '');
-    let temperatursModuleNames = Object.keys(temperaturesJson);
-    console.log(temperaturesJson);
-    let humiditiesModuleNames = Object.keys(humiditiesJson);
-    generateModuleNamesForTemp()
-    generateModuleNamesForHum()
-    selectTemperatureItem(temperatursModuleNames[0] ?? "")
-    selectHumidityItem(humiditiesModuleNames[0] ?? "")
-
-    $('.module-name').on('click', function () {
-        let name = $(this).attr('data-name');
-        selectTemperatureItem(name)
+    $("#prevDay").on('click', function () {
+        let date = new Date(window.currentTime - window.dayInMillis);
+        window.currentTime = date.getTime();
+        $("#tempCurrentTimeString").text(formatDateAsFullDate(date));
+        getDataByDate('temp', window.currentTime)
     })
-    $('.module-name-hum').on('click', function () {
-        let name = $(this).attr('data-name');
-        selectHumidityItem(name)
+    $("#humPrevDay").on('click', function () {
+        let date = new Date(window.humCurrentTime - window.dayInMillis);
+        window.humCurrentTime = date.getTime();
+        $("#humCurrentTimeString").text(formatDateAsFullDate(date));
+        getDataByDate('hum', window.humCurrentTime)
     })
 
+    $("#nextDay").on('click', function () {
+        let date = new Date(window.currentTime + window.dayInMillis);
+        window.currentTime = date.getTime();
+        $("#tempCurrentTimeString").text(formatDateAsFullDate(date));
+        getDataByDate('temp', window.currentTime)
+    })
+
+    $("#humNextDay").on('click', function () {
+        let date = new Date(window.humCurrentTime + window.dayInMillis);
+        window.humCurrentTime = date.getTime();
+        $("#humCurrentTimeString").text(formatDateAsFullDate(date));
+        getDataByDate('hum', window.humCurrentTime)
+    })
+
+    window.currentTime = Date.now();
+    window.humCurrentTime = Date.now();
+    window.dayInMillis = 1e3 * 60 * 60 * 24;
+    var temperatursModuleNames = 0;
+    var humiditiesModuleNames = 0;
+    $("#tempCurrentTimeString").text(formatDateAsFullDate(window.currentTime));
+    $("#humCurrentTimeString").text(formatDateAsFullDate(window.humCurrentTime));
+    checkIfThereData();
+    function checkIfThereData() {
+        temperatursModuleNames = Object.keys(temperaturesJson);
+        humiditiesModuleNames = Object.keys(humiditiesJson);
+        console.log("temperatursModuleNames", temperatursModuleNames);
+        console.log("humiditiesModuleNames", humiditiesModuleNames);
+        $("#hum-modules-container").empty();
+        $("#hum-modules-container").append(generateOtherModuleMenuItem);
+        $("#modules-container").empty();
+        $("#modules-container").append(generateOtherModuleMenuItem);
+        $("#temperature-title").text("");
+        $("#humidity-title").text("");
+        if (temperatursModuleNames.length == 0) {
+            $("#temp-no-data").css('display', 'flex');
+            $("#myAreaChart").css('display', 'none');
+        } else {
+            $("#temp-no-data").css('display', 'none');
+            $("#myAreaChart").css('display', 'block');
+            generateModuleNamesForTemp()
+            selectTemperatureItem(temperatursModuleNames[0] ?? "")
+        }
+        if (humiditiesModuleNames.length == 0) {
+            $("#hum-no-data").css('display', 'flex');
+            $("#humidityChart").css('display', 'none');
+        } else {
+            $("#hum-no-data").css('display', 'none');
+            $("#humidityChart").css('display', 'block');
+            generateModuleNamesForHum()
+            selectHumidityItem(humiditiesModuleNames[0] ?? "")
+        }
+
+        $('.module-name').on('click', function () {
+            let name = $(this).attr('data-name');
+            selectTemperatureItem(name)
+        })
+        $('.module-name-hum').on('click', function () {
+            let name = $(this).attr('data-name');
+            selectHumidityItem(name)
+        })
+
+    }
     function selectTemperatureItem(name) {
         window.selectedName = name;
         let values = [];
@@ -69,7 +122,7 @@
     }
     function generateModuleNamesForHum() {
         let modulesContainer = $("#hum-modules-container");
-        temperatursModuleNames.forEach(name => {
+        humiditiesModuleNames.forEach(name => {
             let ele = $(`<a class="dropdown-item module-name-hum" style="cursor:pointer"></a>`)
             ele.text(name)
             ele.attr('data-name', name)
@@ -141,6 +194,33 @@
 
     }
 
+    function getDataByDate(required, currentDate) {
+        let token = getCookieValue('token')
+        axios.post("/get-temp-by-date", {
+            currentDate: currentDate,
+            required: required
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        }).then((result) => {
+
+            if (required == 'temp') {
+                temperaturesJson = result.data;
+                temperatursModuleNames = Object.keys(temperaturesJson);
+                // generateModuleNamesForTemp()
+                // selectTemperatureItem(temperatursModuleNames[0] ?? "")
+            } else {
+                humiditiesJson = result.data;
+                humiditiesModuleNames = Object.keys(humiditiesJson);
+                // generateModuleNamesForHum()
+                // selectHumidityItem(humiditiesModuleNames[0] ?? "")
+            }
+
+            checkIfThereData();
+
+        }).catch(console.error);
+    }
 
     function generateLineChartForHumidity(dates, data) {
         var ctx = document.getElementById("humidityChart");
@@ -205,4 +285,32 @@
         });
 
     }
+
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+    function formatDateAsFullDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+    function getCookieValue(name) {
+        const regex = new RegExp(`(^| )${name}=([^;]+)`)
+        const match = document.cookie.match(regex)
+        if (match) {
+            return match[2]
+        }
+    }
+
 </script>

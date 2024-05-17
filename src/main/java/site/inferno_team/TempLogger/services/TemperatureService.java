@@ -23,9 +23,7 @@ import site.inferno_team.TempLogger.utils.Pair;
 public class TemperatureService {
     private final TemperatureRepository temperatureRepository;
 
-    private Map<EspModule, List<Pair<String, Long>>> getAllTempratures(String type) {
-
-        LocalDate currentDate = LocalDate.now();
+    private Map<EspModule, List<Pair<String, Long>>> getAllTempratures(String type, LocalDate currentDate) {
 
         // Get the start and end timestamps for the current day
         Date startOfDay = Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -36,8 +34,8 @@ public class TemperatureService {
 
         Function<Temperature, String> temperatureMapper = Temperature::getTemperature;
         Function<Temperature, String> humidityMapper = Temperature::getHumidity;
-        Function<Temperature, Long> createdAtMapper = temp -> temp.getCreatedAt().getTime(); // Assuming createdAt is
-
+        Function<Temperature, Long> createdAtMapper = temp -> temp.getCreatedAt().getTime();
+        
         return temperatures.stream()
                 .collect(Collectors.groupingBy(Temperature::getModule,
                         Collectors.mapping(temp -> Pair.of(
@@ -47,8 +45,8 @@ public class TemperatureService {
 
     }
 
-    public Map<String, List<Pair<String, Long>>> allTempratures() {
-        Map<EspModule, List<Pair<String, Long>>> temperatures = this.getAllTempratures("temperature");
+    public Map<String, List<Pair<String, Long>>> allTempratures(LocalDate time) {
+        Map<EspModule, List<Pair<String, Long>>> temperatures = this.getAllTempratures("temperature", time);
         Map<String, List<Pair<String, Long>>> tempMap = new HashMap<>();
 
         for (Map.Entry<EspModule, List<Pair<String, Long>>> entry : temperatures.entrySet()) {
@@ -61,8 +59,8 @@ public class TemperatureService {
         return tempMap;
     }
 
-    public Map<String, List<Pair<String, Long>>> allHumidities() {
-        Map<EspModule, List<Pair<String, Long>>> humidities = this.getAllTempratures("humidity");
+    public Map<String, List<Pair<String, Long>>> allHumidities(LocalDate time) {
+        Map<EspModule, List<Pair<String, Long>>> humidities = this.getAllTempratures("humidity", time);
         Map<String, List<Pair<String, Long>>> humMap = new HashMap<>();
 
         for (Map.Entry<EspModule, List<Pair<String, Long>>> entry : humidities.entrySet()) {

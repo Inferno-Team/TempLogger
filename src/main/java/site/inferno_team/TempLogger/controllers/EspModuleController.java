@@ -116,7 +116,7 @@ public class EspModuleController {
     }
 
     @PostMapping("/update")
-    public String updateEspValues(@RequestParam Map<String, String> request, Model model) {
+    public String updateEspValues(@RequestBody Map<String, String> request, Model model) {
         int id = Integer.parseInt(request.get("id"));
         EspModule module = moduleRepository.findById(id).orElseThrow();
         module.setName(request.get("name"));
